@@ -1,50 +1,50 @@
 title: Data.List
 
-text: O módulo [code] Data.List [/code] obviamente lida com listas, provendo funções muito úteis que inclusive já conhecemos algumas (como [code] map [/code] e [code] filter [/code]) por [code] Prelude [/code] já importar algo por conveniência. Você não precisará importar [code] Data.List [/code] via importação qualificada porque não conflita com nada do [code] Prelude [/code] (exceto os já roubados automaticamente). Vamos dar uma olhada que algumas que ainda não conhecemos.
+text: O módulo [code] Data.List [/code] é voltado para listas, obviamente. Ele provê algumas funções muito úteis para lidar com elas. Nós já nos deparamos com algumas de suas funções (como [code] map [/code] e [code] filter [/code]), porque o módulo [code] Prelude [/code] exporta algumas funções do [code] Data.List [/code] por conveniência. Você não tem que importar [code] Data.List [/code] via uma importação qualificada porque ele não conflita com nenhum nome do [code] Prelude [/code], exceto por aqueles que o [code] Prelude [/code] já rouba do [code] Data.List [/code]. Vamos dar uma olhada em algumas das funções que com que não nos deparamos antes.
 
-[function] intersperse [/function] recebe um elemento e uma lista e o repete entre cada um dos elementos da lista. Veja só:
+[function] intersperse [/function] recebe um elemento e uma lista e então coloca o elemento entre cada par de elementos da lista. Aqui está uma demonstração:
 
-[function] intercalate [/function] pega uma lista de listas e uma lista simples e a insere entre cada uma, retornando apenas uma lista com o resultado.
+[function] intercalate [/function] pega uma lista de listas e uma lista. Ele então insere a lista por entre todas aquelas listas e por fim achata o resultado.
 
-[function] transpose [/function] transpõe uma lista de listas. Vendo uma lista de listas como uma matriz, as colunas viram linhas e vice-versa.
+[function] transpose [/function] transpõe uma lista de listas. Se você olhar uma lista de listas como uma matriz 2D, as colunas se tornam linhas e vice versa.
 
-Supondo que queremos somar os polinômios <i>3x<sup>2</sup> + 5x + 9</i>, <i>10x<sup>3</sup> + 9</i> e <i>8x<sup>3</sup> + 5x<sup>2</sup> + x - 1</i>. Podemos representá-los por meio das listas [code] [0,3,5,9] [/code], [code] [10,0,0,9] [/code] e [code] [8,5,1,-1] [/code]. Agora para somar, precisamos fazer só o seguinte:
-
-
-
-Quando transpomos essas três listas, as potências de 3 estão na primeira linha, as de 2 na segunda e assim por diante. Mapear [code] sum [/code] desses valores produz o resultado esperado.
-
-[function] foldl' [/function], [function] foldl1' [/function], [function] foldr' [/function] e [function] foldr1' [/function] são mais trabalhadoras que suas versões preguiçosas. Ao usar folds preguiçosas em listas grandes, você pode se deparar com um <a href="http://pt.wikipedia.org/wiki/Pilha_de_chamada#Estouro_de_pilha">estouro de pilha</a>. O culpado disso é exatamente a natureza preguiçosa das funções, que ao invés de realmente realizar a operação com o acumulado, somente diz que quando for pedido um resultado, ele irá executar mais essa outra conta. O problema é quando todo esse bando de promessas ultrapassa o limite da memória. Os folds severos não são tão passíveis de bugs por já realizar as operações intermediárias ao invés de encher a pilha de falsas promessas. Então se você tiver esse tipo de problemas, tente usar suas versões trabalhadoras.
-
-[function] concat [/function] concatena uma lista de listas em apenas uma lista.
+Digamos que tenhamos os polinômios <i>3x<sup>2</sup> + 5x + 9</i>, <i>10x<sup>3</sup> + 9</i> e <i>8x<sup>3</sup> + 5x<sup>2</sup> + x - 1</i> e nós queiramos somá-los todos juntos. Nós podemos usar as listas [code] [0,3,5,9] [/code], [code] [10,0,0,9] [/code] e [code] [8,5,1,-1] [/code] para representá-los em Haskell. Agora para somá-los, tudo que precisamos fazer é isso:
 
 
 
-Somente removerá um nível de camadas. Então se você quer simplificar [code] [[[2,3],[3,4,5],[2]],[[2,3],[3,4]]] [/code] - uma lista de listas, precisa concatenar duas vezes.
+Quando transpomos essas três listas, as potências de 3 passam para a primeira linha, as de 2, para a segunda, e assim por diante. Mapear [code] sum [/code] a isso produz o resultado desejado.
 
-[function] concatMap [/function] é o mesmo que mapear e depois concatenar uma lista.
+[function] foldl' [/function] e [function] foldl1' [/function] são versões mais estritas do que suas respectivas incarnações preguiçosas. Ao usar dobras preguiçosas em listas realmente grandes, você pode frequentemente receber um erro de <a href="http://pt.wikipedia.org/wiki/Pilha_de_chamada#Estouro_de_pilha">estouro de pilha</a> como resultado. O culpado disso é que, graças à natureza preguiçosa dos <i>folds</i>, o valor do acumulador não é realmente atualizado conforme a dobra acontece. O que realmente acontece é que o acumulador meio que faz uma promessa de que vai computar seu valor quando a ele for pedido que realmente produza o resultado (também chamado de conversão). Isso acontece para cada acumulador intermediário, e todas essas conversões estouram a sua pilha. Os <i>folds</i> estritos não são <i>buggers</i> preguiçosos e realmente computam os valores intermediários conforme lhes é pedido, em vez de encher a sua pilha com conversões. Então, se você em algum momento receber erros de estouro de pilha ao fazer dobras preguiçosas, tente trocar para a sua versão estrita.
+
+[function] concat [/function] achata uma lista de listas em apenas uma lista de elementos.
 
 
 
+Ela somente removerá um nível de aninhamento. Então se você quiser achatar completamente [code] [[[2,3],[3,4,5],[2]],[[2,3],[3,4]]] [/code], que é uma lista de listas de listas, terá de concatenar duas vezes.
 
-[function] and [/function] recebe uma lista de valores booleanos e retorna [code] True [/code] se todos forem [code] True [/code].
+Fazer [function] concatMap [/function] é o mesmo que primeiro mapear uma função para uma lista e depois concatenar a lista com [code] concat [/code].
 
 
 
 
-[function] or [/function] é relativamente parecido com o [code] and [/code], mas retorna [code] True [/code] se no mínimo um dos valores for [code] True [/code].
+[function] and [/function] recebe uma lista de valores booleanos e retorna [code] True [/code] apenas se todos os valores na lista forem [code] True [/code].
 
 
 
 
-[function] any [/function] e [function] all [/function] verificam se um predicado é verdadeiro para no mínimo um ou todos os elementos da lista (respectivamente). Geralmente usamos uma delas ao invés de mapear e depois usar [code] and [/code] ou [code] or [/code].
-
-
-[function] iterate [/function] toma uma função e um valor inicial. Aplica a função ao valor, depois aplica a função ao seu resultado, então ao seu resultado novamente... Retorna os resultados na forma de uma lista infinita.
+[function] or [/function] é como [code] and [/code], mas retorna [code] True [/code] se qualquer dos valores booleanos na lista for [code] True [/code].
 
 
 
-[function] splitAt [/function] recebe um número e uma lista. Então separa a lista em <número> elementos, retornando uma tupla.
+
+[function] any [/function] e [function] all [/function] recebem um predicado e então verificam se algum ou todos os elementos de uma lista satisfazem o predicado, respectivamente. Geralmente, usamos essas duas funções, em vez de mapear sobre uma lista e então chamar [code] and [/code] ou [code] or [/code].
+
+
+[function] iterate [/function] toma uma função e um valor inicial. Ela aplica a função ao valor inicial, depois aplica a função ao seu resultado, então-a ao resultado novamente, etc. Ela retorna todos os resultados na forma de uma lista infinita.
+
+
+
+[function] splitAt [/function] recebe um número e uma lista. Ela então quebra a lista no elemento de índice número, retornando as duas listas resultantes numa tupla..
 
 
 
